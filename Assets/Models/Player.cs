@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : Character
 {
+
     private CircleCollider2D range;
     private bool isGrounded;
     private bool canAttack;
@@ -13,12 +14,16 @@ public class Player : MonoBehaviour
     private SpriteRenderer sr;
     Animator knight_animator;
     Rigidbody2D rb;
-    public float thrust = 5f;
-    
+    public float thrust;
+    override public void Move(){
+        transform.Translate(new Vector3(horizontalInput, 0, 0) * moveSpeed * Time.deltaTime);
+    }
     private void Start() {
-        
+        hp = 100;
+        dmg = 20;
+        thrust = 10f;
         canAttack=true;
-        moveSpeed = 5f;
+        moveSpeed = 10f;
         isGrounded = false;
         knight_animator = this.GetComponent<Animator>();
         rb = this.GetComponent<Rigidbody2D>();
@@ -39,34 +44,28 @@ public class Player : MonoBehaviour
         } else { sr.flipX = false; }
         
         knight_animator.SetFloat("Speed",Mathf.Abs(horizontalInput));
-        
+        if(!isGrounded)
+            knight_animator.SetBool("isJumping",true);
         if(Input.GetKeyDown(KeyCode.UpArrow) && isGrounded){
-            
             rb.AddForce(new Vector2(0, 1) * thrust,ForceMode2D.Impulse);
             knight_animator.SetBool("isJumping",true);
         }
         if(Input.GetKeyDown(KeyCode.Space)&&canAttack){
-            canAttack=false;
+            if(isGrounded){
+                canAttack=false;
+                knight_animator.SetTrigger("Attack");
+                
+            } else if(!isGrounded){
+                knight_animator.SetTrigger("jumpAttack");
+            }
             StartCoroutine("Attack");
-            
-            
-        }
-        
-        transform.Translate(new Vector3(horizontalInput, 0, 0) * moveSpeed * Time.deltaTime);
-        
-            
-        
-        
-        
+        } 
+        Move();
     }
     IEnumerator Attack()
     {
-       
-        
-        knight_animator.SetTrigger("Attack");
         yield return new WaitForSeconds(0.6f);
         canAttack = true;
-        
     }
     void FixedUpdate() {
         

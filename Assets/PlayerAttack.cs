@@ -16,18 +16,22 @@ public class PlayerAttack : MonoBehaviour
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Space) && range.enabled ==false){
-            
+            range.enabled = true;
             StartCoroutine("Attack");
         }
     }
     IEnumerator Attack(){
         
         yield return new WaitForSeconds(0.6f);
-        range.enabled = true;
+
         range.enabled = false;
 
     }
-    private void OnCollisionEnter2D(Collision2D other) {
+    private void OnTriggerEnter2D(Collider2D other) {
+        Debug.Log("sa touche");
+        other.GetComponent<Enemy>().ReceiveDamages(gameObject.transform.parent.GetComponent<Player>().dmg);
+    }
+    private void OnTriggerExit2D(Collider2D other) {
         
     }
 }

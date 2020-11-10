@@ -2,20 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Character : MonoBehaviour
+public class Character : MonoBehaviour
 {
+    public GameObject healthBar,healthBackground,health;
     public float dmg;
-    protected int hp;
-    protected int attackspeed;
+    public float hp,maxHp;
+    public float attackspeed;
+   
+    public void receiveDamages(float damages){
+        Debug.Log(hp);
+        this.hp -= damages;
+        if(hp<=0){
+            Destroy(transform.gameObject);
+        }
+        if(!gameObject.tag.Equals("Player"))
+            healthBar.transform.localScale = new Vector3(hp/maxHp,1,0);
 
-    public abstract void Move();
-    public void Die(){
-        Destroy(this.gameObject);
-    }
-    public void getDamages(int damages){
-        dmg -= damages;
-        if(hp<=0)
-            Die();
+
     }
     private void Start() {
         

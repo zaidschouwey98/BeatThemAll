@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Player : Character
 {
-
+    public LayerMask enemyLayer;
+    public Transform attackPoint;
+    public float attackRange = 0.9f;
     private CircleCollider2D range;
     private bool isGrounded;
     private bool canAttack;
@@ -14,14 +17,15 @@ public class Player : Character
     private SpriteRenderer sr;
     Animator knight_animator;
     Rigidbody2D rb;
-    public float thrust;
-    override public void Move(){
+    public float thrust,strikeThrust;
+    void Move(){
         transform.Translate(new Vector3(horizontalInput, 0, 0) * moveSpeed * Time.deltaTime);
     }
     private void Start() {
         hp = 100;
         dmg = 20;
         thrust = 10f;
+        strikeThrust = 5f;
         canAttack=true;
         moveSpeed = 10f;
         isGrounded = false;
@@ -40,8 +44,10 @@ public class Player : Character
             flipx = false;
         }
         if(flipx){
-            sr.flipX = true;
-        } else { sr.flipX = false; }
+            transform.localScale = new Vector3(-1,1,1);
+        } else { 
+            transform.localScale = new Vector3(1,1,1);
+         }
         
         knight_animator.SetFloat("Speed",Mathf.Abs(horizontalInput));
         if(!isGrounded)
@@ -60,13 +66,46 @@ public class Player : Character
             }
             StartCoroutine("Attack");
         } 
+        if(Input.GetKeyDown(KeyCode.LeftShift)&&canAttack){
+            canAttack = false;
+            knight_animator.SetTrigger("strikeAttack");
+            if(flipx){
+            rb.AddForce(new Vector2(-1, 0) * strikeThrust,ForceMode2D.Impulse);
+            }else {
+                rb.AddForce(new Vector2(1, 0) * strikeThrust,ForceMode2D.Impulse);
+            }
+            StartCoroutine("Attack");
+            
+            
+        } 
         Move();
     }
     IEnumerator Attack()
     {
-        yield return new WaitForSeconds(0.6f);
+        
+        yield return new WaitForSeconds(0.45f);
+        Collider2D[] Targets = Physics2D.OverlapCircleAll(attackPoint.position,attackRange,enemyLayer);
+        foreach(Collider2D target in Targets)
+        {
+            if(target.GetComponent<Character>())
+            {
+                Debug.Log(target);
+                Debug.Log("j'attaque la");
+                target.GetComponent<Character>().receiveDamages(dmg);
+            }
+        }
+            
+            
         canAttack = true;
     }
+    void OnDrawGizmosSelected() {
+        if(attackPoint==null)
+            return;
+        Gizmos.DrawWireSphere(attackPoint.position,attackRange);
+    }
+
+
+
     void FixedUpdate() {
         
        

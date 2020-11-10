@@ -5,6 +5,7 @@ using Pathfinding;
 
 public class EnemyAI : MonoBehaviour
 {
+    private int playerDirection;
     private bool flipX;
     public Transform target;
     public float speed = 80f;
@@ -33,9 +34,6 @@ public class EnemyAI : MonoBehaviour
             path = p;
             CurrentWaypoint = 0;
         }
-    }
-    void Move(){
-        
     }
     private void Update() {
         if(flipX){
@@ -66,8 +64,14 @@ public class EnemyAI : MonoBehaviour
         } else if (rb.velocity.x>0){
             flipX = false;
         }
-        Debug.Log(rb.velocity.x);
+        if(direction.x > 0)
+            playerDirection = 1;
+        else if (direction.x < 0)
+            playerDirection = -1;
+        if(!GetComponentInChildren<EnemyRange>().isAttacking)
+            // transform.Translate(new Vector3(playerDirection, 0, 0) * speed * Time.deltaTime);
         rb.AddForce(force);
+           
         float distance = Vector2.Distance(rb.position,path.vectorPath[CurrentWaypoint]);
         if(distance<nextWaypointDistance){
             CurrentWaypoint++;

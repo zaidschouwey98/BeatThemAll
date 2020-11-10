@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
     protected float hearthPoints;
     protected float maxHealth;
     private float healthToScaleBar;
-    protected int damages;
+    public int damages;
     // Start is called before the first frame update
     void Start()
     {

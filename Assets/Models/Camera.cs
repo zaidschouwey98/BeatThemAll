@@ -17,7 +17,11 @@ public class Camera : MonoBehaviour
     void Update()
     {
         newPos = player.GetComponent<Transform>();
-        
-        camTransform.position = new Vector3(newPos.position.x,0,-10);
+        if(newPos.position.x <= -32.8222f || newPos.position.x >= 4.723098f){
+
+        }else{
+            camTransform.position = new Vector3(newPos.position.x,1,-10);
+        }
+            
     }
 }

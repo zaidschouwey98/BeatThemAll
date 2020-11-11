@@ -10,17 +10,7 @@ public class Enemy : MonoBehaviour
     private float healthToScaleBar;
     public int damages;
     // Start is called before the first frame update
-    void Start()
-    {
-        
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+  
     public void ReceiveDamages(float damages){
         Debug.Log(hearthPoints);
         this.hearthPoints -= damages;

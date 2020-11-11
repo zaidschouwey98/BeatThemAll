@@ -8,11 +8,13 @@ public class Character : MonoBehaviour
     public float dmg;
     public float hp,maxHp;
     public float attackspeed;
-   
+    
     public void receiveDamages(float damages){
         Debug.Log(hp);
         this.hp -= damages;
         if(hp<=0){
+            Player.nbKill++;
+            
             Destroy(transform.gameObject);
         }
         if(!gameObject.tag.Equals("Player"))

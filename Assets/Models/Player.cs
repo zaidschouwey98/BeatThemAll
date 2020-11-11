@@ -18,10 +18,12 @@ public class Player : Character
     Animator knight_animator;
     Rigidbody2D rb;
     public float thrust,strikeThrust;
+    public static int nbKill;
     void Move(){
         transform.Translate(new Vector3(horizontalInput, 0, 0) * moveSpeed * Time.deltaTime);
     }
     private void Start() {
+        nbKill = 0;
         hp = 100;
         dmg = 20;
         thrust = 10f;
@@ -62,54 +64,44 @@ public class Player : Character
                 knight_animator.SetTrigger("Attack");
                 
             } else if(!isGrounded){
+                knight_animator.SetBool("isAirAttack",true);
                 knight_animator.SetTrigger("jumpAttack");
             }
-            StartCoroutine("Attack");
+            StartCoroutine("Attack",0.45f);
         } 
         if(Input.GetKeyDown(KeyCode.LeftShift)&&canAttack){
-            canAttack = false;
             knight_animator.SetTrigger("strikeAttack");
+            knight_animator.SetBool("isAirAttack",true);
+            canAttack = false;
+            
             if(flipx){
             rb.AddForce(new Vector2(-1, 0) * strikeThrust,ForceMode2D.Impulse);
             }else {
                 rb.AddForce(new Vector2(1, 0) * strikeThrust,ForceMode2D.Impulse);
             }
-            StartCoroutine("Attack");
+            StartCoroutine("Attack",0.25f);
             
             
         } 
         Move();
     }
-    IEnumerator Attack()
+    IEnumerator Attack(float timer)
     {
         
-        yield return new WaitForSeconds(0.45f);
+        yield return new WaitForSeconds(timer);
         Collider2D[] Targets = Physics2D.OverlapCircleAll(attackPoint.position,attackRange,enemyLayer);
         foreach(Collider2D target in Targets)
         {
             if(target.GetComponent<Character>())
             {
-                Debug.Log(target);
-                Debug.Log("j'attaque la");
                 target.GetComponent<Character>().receiveDamages(dmg);
             }
         }
             
-            
+        knight_animator.SetBool("isAirAttack",false);
         canAttack = true;
     }
-    void OnDrawGizmosSelected() {
-        if(attackPoint==null)
-            return;
-        Gizmos.DrawWireSphere(attackPoint.position,attackRange);
-    }
-
-
-
-    void FixedUpdate() {
-        
-       
-    }
+  
 
     void OnCollisionEnter2D(Collision2D other) {
         if(other.gameObject.tag == "Ground"){
